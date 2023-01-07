@@ -29,7 +29,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
            context,
            MaterialPageRoute(
                builder: (context) =>
-               const UpdateDocOrderPage(title: "Update Info")),
+                UpdateDocOrderPage(title: "Update Info",barcode: _barcodeResult,)),
           );
      }
   }
