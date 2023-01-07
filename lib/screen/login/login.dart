@@ -1,6 +1,10 @@
 import 'package:barcode_scan/screen/create_order/create_order.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'login_controller.dart';
+import 'model.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.title});
@@ -13,40 +17,66 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  @override
+  void initState() {
+    super.initState();
+   checkLogin();
+  }
+
+  Future<void> checkLogin() async {
+      var pres = await SharedPreferences.getInstance();
+      String? token = pres.getString("token");
+      if(token !=null && token.isNotEmpty){
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                const CreateOrderPage(title: "Barcode Scanner")),
+            ModalRoute.withName("/Home"));
+      }
+  }
+
   String _userName = "";
   String _password = "";
 
+  LoginController loginController = LoginController();
+
   Future<void> _login() async {
-    if (_userName.isEmpty || _password.isEmpty){
+    if (_userName.isEmpty || _password.isEmpty) {
       Fluttertoast.showToast(
-          msg: "username hoac password đang trống!",
+          msg: "username hoặc password đang trống!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 18.0
-      );
+          fontSize: 18.0);
       return;
     }
-    if (_userName != "admin" || _userName != "admin"){
+
+    LoginResponse? response =
+        await loginController.login(email: _userName, passWord: _password);
+
+    if (response != null) {
+      var pres = await SharedPreferences.getInstance();
+      pres.setString("token",response.userInfo.accessToken);
+
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  const CreateOrderPage(title: "Barcode Scanner")),
+          ModalRoute.withName("/Home"));
+    } else {
       Fluttertoast.showToast(
-          msg: "username hoac password đang bị sai!",
+          msg: "Sai mật khẩu hoặc lỗi mạng!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 18.0
-      );
-      return;
+          fontSize: 18.0);
     }
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                const CreateOrderPage(title: "Barcode Scanner")),
-        ModalRoute.withName("/Home"));
   }
 
   @override
