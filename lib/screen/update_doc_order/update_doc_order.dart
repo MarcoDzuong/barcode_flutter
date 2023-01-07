@@ -72,14 +72,22 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
       Navigator.pop(context);
     } else if(response.statusCode==401){
       var pres = await SharedPreferences.getInstance();
-      await pres.remove('counter');
+      await pres.remove('token');
+      Fluttertoast.showToast(
+          msg: "Token hết hạn. Hãy login lại!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 18.0);
+      Navigator.pop(context);
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) =>
               const LoginPage(title: "Barcode Scanner")),
           ModalRoute.withName("/Login"));
-      Navigator.pop(context);
     }else{
       Fluttertoast.showToast(
           msg: "Barcode đã tồn tại!",

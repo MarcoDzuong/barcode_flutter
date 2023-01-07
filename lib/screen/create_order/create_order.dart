@@ -1,6 +1,9 @@
 import 'package:barcode_scan/screen/update_doc_order/update_doc_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../login/login.dart';
 
 class CreateOrderPage extends StatefulWidget {
   const CreateOrderPage({super.key, required this.title});
@@ -51,6 +54,17 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     }
   }
 
+  Future<void> _logOut() async{
+    var pres = await SharedPreferences.getInstance();
+    await pres.remove('token');
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+            const LoginPage(title: "Barcode Scanner")),
+        ModalRoute.withName("/Login"));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +76,15 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         padding: const EdgeInsets.all(30.0),
         child: Column(
           children: <Widget>[
+             ElevatedButton(
+                onPressed: _logOut,
+                 style: ElevatedButton.styleFrom(
+                   shape: RoundedRectangleBorder(
+                     borderRadius: BorderRadius.circular(12), // <-- Radius
+                   ),
+                 ),
+                child: Text("Logout")),
+            const SizedBox(height: 20),
             const Text(
               'Dưới đây là thông tin barcode:',
             ),
