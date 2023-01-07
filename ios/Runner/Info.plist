@@ -32,6 +32,8 @@
 	<string>LaunchScreen</string>
 	<key>NSCameraUsageDescription</key>
     <string>App need camera to scan code</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>App need access photo</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
