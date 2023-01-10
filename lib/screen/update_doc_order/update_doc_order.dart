@@ -145,7 +145,10 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            Text("$_countImage")
+                            Text(
+                                "$_countImage",
+                            style: const TextStyle(color: Colors.red,fontSize: 20),
+                            )
                           ],
                         ),
                       )
