@@ -1,4 +1,5 @@
 import 'package:barcode_scan/screen/create_order/create_order_controller.dart';
+import 'package:barcode_scan/screen/create_order/model.dart';
 import 'package:barcode_scan/screen/update_doc_order/update_doc_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -19,9 +20,7 @@ class CreateOrderPage extends StatefulWidget {
 class _CreateOrderPageState extends State<CreateOrderPage> {
   String _barcodeResult = "";
   final TextEditingController _barcodeTextController = TextEditingController();
-  final CreateOrderController _createOrderController =  CreateOrderController();
-
-
+  final CreateOrderController _createOrderController = CreateOrderController();
 
   @override
   void initState() {
@@ -32,26 +31,61 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   }
 
   Future<void> _submit() async {
-     if(_barcodeResult.isNotEmpty){
-       bool data = await _createOrderController.isExit(barcode: _barcodeResult);
-       if(data){
-         Navigator.push(
-           context,
-           MaterialPageRoute(
-               builder: (context) =>
-                   UpdateDocOrderPage(title: "Update Info",barcode: _barcodeResult,)),
-         );
-       }else{
-         Fluttertoast.showToast(
-             msg: "Barcode đã tồn tại!",
-             toastLength: Toast.LENGTH_SHORT,
-             gravity: ToastGravity.CENTER,
-             timeInSecForIosWeb: 1,
-             backgroundColor: Colors.red,
-             textColor: Colors.white,
-             fontSize: 18.0);
-       }
-     }
+    if (_barcodeResult.isNotEmpty) {
+      CheckBarcodeRes? res =
+          await _createOrderController.isExit(barcode: _barcodeResult);
+      if (res == null) {
+        Fluttertoast.showToast(
+            msg: "Lỗi mạng!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 18.0);
+        return;
+      }
+
+      if (res.status == 401) {
+        var pres = await SharedPreferences.getInstance();
+        await pres.remove('token');
+        Fluttertoast.showToast(
+            msg: "Token hết hạn. Hãy login lại!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 18.0);
+        Navigator.pop(context);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const LoginPage(title: "Barcode Scanner")),
+            ModalRoute.withName("/Login"));
+        return;
+      }
+
+      if (res.data == true) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => UpdateDocOrderPage(
+                    title: "Update Info",
+                    barcode: _barcodeResult,
+                  )),
+        );
+      } else {
+        Fluttertoast.showToast(
+            msg: "Barcode đã tồn tại!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 18.0);
+      }
+    }
   }
 
   Future<void> _textChange(String text) async {
@@ -71,80 +105,83 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     }
   }
 
-  Future<void> _logOut() async{
+  Future<void> _logOut() async {
     var pres = await SharedPreferences.getInstance();
     await pres.remove('token');
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-            const LoginPage(title: "Barcode Scanner")),
+            builder: (context) => const LoginPage(title: "Barcode Scanner")),
         ModalRoute.withName("/Login"));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          children: <Widget>[
-             ElevatedButton(
-                onPressed: _logOut,
-                 style: ElevatedButton.styleFrom(
-                   shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(12), // <-- Radius
-                   ),
-                 ),
-                child: Text("Logout")),
-            const SizedBox(height: 20),
-            const Text(
-              'Dưới đây là thông tin barcode:',
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Barcode la : $_barcodeResult',
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 18, color: Colors.red),
-            ),
-            const SizedBox(height: 60),
-            TextField(
-              onChanged: (text) {
-                _textChange(text);
-              },
-              controller: _barcodeTextController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Enter a barcode',
-              ),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: _scanBarcode,
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // <-- Radius
-                ),
-              ),
-              child: const Text('Dùng Barcode Scanner'),
-            ),
-            const SizedBox(height: 100),
-            ElevatedButton(
-              onPressed: _barcodeResult.isEmpty? null : _submit,
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // <-- Radius
-                ),
-              ),
-              child: const Text('Xác nhận tạo đơn', style: TextStyle(fontSize: 20),),
-            ),
-          ],
+        appBar: AppBar(
+          title: Text(widget.title),
         ),
-      )
-    );
+        resizeToAvoidBottomInset: false,
+        body: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Column(
+            children: <Widget>[
+              ElevatedButton(
+                  onPressed: _logOut,
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12), // <-- Radius
+                    ),
+                  ),
+                  child: Text("Logout")),
+              const SizedBox(height: 20),
+              const Text(
+                'Dưới đây là thông tin barcode:',
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Barcode la : $_barcodeResult',
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.red),
+              ),
+              const SizedBox(height: 60),
+              TextField(
+                onChanged: (text) {
+                  _textChange(text);
+                },
+                controller: _barcodeTextController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter a barcode',
+                ),
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: _scanBarcode,
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12), // <-- Radius
+                  ),
+                ),
+                child: const Text('Dùng Barcode Scanner'),
+              ),
+              const SizedBox(height: 100),
+              ElevatedButton(
+                onPressed: _barcodeResult.isEmpty ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12), // <-- Radius
+                  ),
+                ),
+                child: const Text(
+                  'Xác nhận tạo đơn',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
