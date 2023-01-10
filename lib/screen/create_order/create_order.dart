@@ -1,6 +1,8 @@
+import 'package:barcode_scan/screen/create_order/create_order_controller.dart';
 import 'package:barcode_scan/screen/update_doc_order/update_doc_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../login/login.dart';
@@ -17,6 +19,9 @@ class CreateOrderPage extends StatefulWidget {
 class _CreateOrderPageState extends State<CreateOrderPage> {
   String _barcodeResult = "";
   final TextEditingController _barcodeTextController = TextEditingController();
+  final CreateOrderController _createOrderController =  CreateOrderController();
+
+
 
   @override
   void initState() {
@@ -28,12 +33,24 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
 
   Future<void> _submit() async {
      if(_barcodeResult.isNotEmpty){
-       Navigator.push(
+       bool data = await _createOrderController.isExit(barcode: _barcodeResult);
+       if(data){
+         Navigator.push(
            context,
            MaterialPageRoute(
                builder: (context) =>
-                UpdateDocOrderPage(title: "Update Info",barcode: _barcodeResult,)),
-          );
+                   UpdateDocOrderPage(title: "Update Info",barcode: _barcodeResult,)),
+         );
+       }else{
+         Fluttertoast.showToast(
+             msg: "Barcode đã tồn tại!",
+             toastLength: Toast.LENGTH_SHORT,
+             gravity: ToastGravity.CENTER,
+             timeInSecForIosWeb: 1,
+             backgroundColor: Colors.red,
+             textColor: Colors.white,
+             fontSize: 18.0);
+       }
      }
   }
 

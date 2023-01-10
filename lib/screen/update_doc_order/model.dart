@@ -11,10 +11,16 @@ class UpdateResponse {
 class UpdateRequest {
 
   String barcode;
-  String note;
   String token;
   List<XFile>? images;
+  String note;
+  int price;
+  int count;
+  int weight;
 
   UpdateRequest(
-      {required this.barcode, required this.note, required this.token, required this.images});
+      {required this.barcode, required this.note,
+        required this.token, required this.images,
+        required this.price, required this.weight, required this.count
+      });
 }

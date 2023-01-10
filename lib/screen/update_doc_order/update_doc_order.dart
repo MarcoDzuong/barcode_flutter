@@ -32,6 +32,9 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
   final ImagePicker _picker = ImagePicker();
   List<XFile>? _images;
   final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _countController = TextEditingController();
   UpdateProductController controller = UpdateProductController();
 
   Future<void> _onImageButtonPressed() async {
@@ -58,7 +61,10 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
         barcode: _barcode,
         note: _noteController.text,
         token: "13|iGMssmFaDY9xupqTHt0foVAFuU3XY0UpVJYM7fT0",
-        images: _images);
+        images: _images,
+        count: int.parse(_countController.text.toString()),
+        weight: int.parse(_weightController.text.toString()),
+        price: int.parse(_priceController.text.toString()));
     UpdateResponse? response = await controller.update(updateRequest);
     if (response.isSuccess) {
       Fluttertoast.showToast(
@@ -70,7 +76,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
           textColor: Colors.white,
           fontSize: 18.0);
       Navigator.pop(context);
-    } else if(response.statusCode==401){
+    } else if (response.statusCode == 401) {
       var pres = await SharedPreferences.getInstance();
       await pres.remove('token');
       Fluttertoast.showToast(
@@ -85,10 +91,9 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-              const LoginPage(title: "Barcode Scanner")),
+              builder: (context) => const LoginPage(title: "Barcode Scanner")),
           ModalRoute.withName("/Login"));
-    }else{
+    } else {
       Fluttertoast.showToast(
           msg: "Barcode đã tồn tại!",
           toastLength: Toast.LENGTH_SHORT,
@@ -142,7 +147,8 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                   ),
                   const SizedBox(height: 30),
                   TextField(
-                    onChanged: (text) {},
+                    keyboardType: TextInputType.number,
+                    controller: _countController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: 'Số kiện',
@@ -150,7 +156,8 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                   ),
                   const SizedBox(height: 30),
                   TextField(
-                    onChanged: (text) {},
+                    keyboardType: TextInputType.number,
+                    controller: _weightController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: 'Số cân',
@@ -158,7 +165,8 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                   ),
                   const SizedBox(height: 30),
                   TextField(
-                    onChanged: (text) {},
+                    keyboardType: TextInputType.number,
+                    controller: _priceController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: 'Giá cước',
