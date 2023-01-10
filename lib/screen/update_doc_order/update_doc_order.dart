@@ -36,12 +36,13 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _countController = TextEditingController();
   UpdateProductController controller = UpdateProductController();
-
+  int _countImage = 0;
   Future<void> _onImageButtonPressed() async {
     final List<XFile> images = await _picker.pickMultiImage();
     setState(() {
       _images = images;
       _imagePath = images[0].path;
+      _countImage = images.length;
     });
   }
 
@@ -135,12 +136,17 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                       SizedBox(
                         width: 100,
                         height: 100,
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: Image.file(
-                            File(_imagePath),
-                            fit: BoxFit.cover,
-                          ),
+                        child: Stack(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: Image.file(
+                                File(_imagePath),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Text("$_countImage")
+                          ],
                         ),
                       )
                     ],
