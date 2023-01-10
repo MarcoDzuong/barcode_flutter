@@ -49,7 +49,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
   Future<void> _onUpdateProduct() async {
     if (_images == null || _images!.isEmpty) {
       Fluttertoast.showToast(
-          msg: "Hãy chọn ảnh!",
+          msg: "请选择一张照片!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -69,7 +69,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
     UpdateResponse? response = await controller.update(updateRequest);
     if (response.isSuccess) {
       Fluttertoast.showToast(
-          msg: "Tạo thành công!",
+          msg: "创造成功!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -81,7 +81,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
       var pres = await SharedPreferences.getInstance();
       await pres.remove('token');
       Fluttertoast.showToast(
-          msg: "Token hết hạn. Hãy login lại!",
+          msg: "请重新登录!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -92,11 +92,11 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => const LoginPage(title: "Barcode Scanner")),
+              builder: (context) => const LoginPage(title: "登录")),
           ModalRoute.withName("/Login"));
     } else {
       Fluttertoast.showToast(
-          msg: "Barcode đã tồn tại!",
+          msg: "条形码已经存在!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -120,14 +120,14 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Barcode : ${widget.barcode}"),
+                  Text("条码 : ${widget.barcode}"),
                   const SizedBox(height: 30),
                   Row(
                     children: [
                       TextButton(
                           onPressed: _onImageButtonPressed,
                           child: const Text(
-                            "CHỌN ẢNH",
+                            "选择照片",
                             style: TextStyle(fontSize: 20),
                           )),
                       const SizedBox(
@@ -160,7 +160,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                     controller: _countController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Số kiện',
+                      hintText: '包裹数量',
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -169,7 +169,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                     controller: _weightController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Số cân',
+                      hintText: '重量',
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -178,7 +178,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                     controller: _priceController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Giá cước',
+                      hintText: '价格',
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -186,7 +186,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                     controller: _noteController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Ghi chú',
+                      hintText: '笔记',
                     ),
                     minLines: 4,
                     maxLines: 5,
@@ -200,7 +200,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                       ),
                     ),
                     child: const Text(
-                      'TẠO ĐƠN HÀNG',
+                      '创建订单',
                       style: TextStyle(fontSize: 20),
                     ),
                   ),

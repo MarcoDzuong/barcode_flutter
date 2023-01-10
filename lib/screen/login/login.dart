@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                const CreateOrderPage(title: "Barcode Scanner")),
+                const CreateOrderPage(title: "扫码机")),
             ModalRoute.withName("/Home"));
       }
   }
@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_userName.isEmpty || _password.isEmpty) {
       Fluttertoast.showToast(
-          msg: "username hoặc password đang trống!",
+          msg: "用户名或密码为空!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                const CreateOrderPage(title: "Barcode Scanner")),
+                const CreateOrderPage(title: "扫码机")),
             ModalRoute.withName("/Home"));
       }else{
         Fluttertoast.showToast(
@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
 
     } else {
       Fluttertoast.showToast(
-          msg: "Sai mật khẩu hoặc lỗi mạng!",
+          msg: "密码错误或网络错误!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -108,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
               },
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: 'UserName',
+                hintText: '用户名',
               ),
             ),
             const SizedBox(height: 20),
@@ -118,14 +118,14 @@ class _LoginPageState extends State<LoginPage> {
               },
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: 'Password',
+                hintText: '密码',
               ),
             ),
             const SizedBox(height: 30),
             TextButton(
                 onPressed: _login,
                 child: const Text(
-                  "Đăng nhập",
+                  "登录",
                   style: TextStyle(fontSize: 20),
                 ))
           ],

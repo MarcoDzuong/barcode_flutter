@@ -36,7 +36,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
           await _createOrderController.isExit(barcode: _barcodeResult);
       if (res == null) {
         Fluttertoast.showToast(
-            msg: "Lỗi mạng!",
+            msg: "网络错误!",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
@@ -50,7 +50,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         var pres = await SharedPreferences.getInstance();
         await pres.remove('token');
         Fluttertoast.showToast(
-            msg: "Token hết hạn. Hãy login lại!",
+            msg: "请重新登录!",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
@@ -61,7 +61,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (context) => const LoginPage(title: "Barcode Scanner")),
+                builder: (context) => const LoginPage(title: "登录")),
             ModalRoute.withName("/Login"));
         return;
       }
@@ -71,13 +71,13 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
           context,
           MaterialPageRoute(
               builder: (context) => UpdateDocOrderPage(
-                    title: "Update Info",
+                    title: "更新信息",
                     barcode: _barcodeResult,
                   )),
         );
       } else {
         Fluttertoast.showToast(
-            msg: "Barcode đã tồn tại!",
+            msg: "条形码已经存在!",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
@@ -96,7 +96,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
 
   Future<void> _scanBarcode() async {
     String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-        "#ff6666", "Cancel", false, ScanMode.BARCODE);
+        "#ff6666", "取消", false, ScanMode.BARCODE);
     if (barcodeScanRes != "-1") {
       setState(() {
         _barcodeTextController.text = "";
@@ -111,7 +111,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) => const LoginPage(title: "Barcode Scanner")),
+            builder: (context) => const LoginPage(title: "登录")),
         ModalRoute.withName("/Login"));
   }
 
@@ -133,14 +133,14 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                       borderRadius: BorderRadius.circular(12), // <-- Radius
                     ),
                   ),
-                  child: Text("Logout")),
+                  child: Text("登出")),
               const SizedBox(height: 20),
               const Text(
-                'Dưới đây là thông tin barcode:',
+                '下面是条形码信息:',
               ),
               const SizedBox(height: 20),
               Text(
-                'Barcode la : $_barcodeResult',
+                '条码 : $_barcodeResult',
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -154,7 +154,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                 controller: _barcodeTextController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Enter a barcode',
+                  hintText: '输入条形码',
                 ),
               ),
               const SizedBox(height: 40),
@@ -165,7 +165,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                     borderRadius: BorderRadius.circular(12), // <-- Radius
                   ),
                 ),
-                child: const Text('Dùng Barcode Scanner'),
+                child: const Text('使用条码扫描器'),
               ),
               const SizedBox(height: 100),
               ElevatedButton(
@@ -176,7 +176,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                   ),
                 ),
                 child: const Text(
-                  'Xác nhận tạo đơn',
+                  '订单创建确认',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
