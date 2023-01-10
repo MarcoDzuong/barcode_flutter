@@ -58,15 +58,26 @@ class _LoginPageState extends State<LoginPage> {
         await loginController.login(email: _userName, passWord: _password);
 
     if (response != null) {
-      var pres = await SharedPreferences.getInstance();
-      pres.setString("token",response.userInfo.accessToken);
+      if(response.userInfo.accessToken!=null){
+        var pres = await SharedPreferences.getInstance();
+        pres.setString("token",response.userInfo.accessToken!);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                const CreateOrderPage(title: "Barcode Scanner")),
+            ModalRoute.withName("/Home"));
+      }else{
+        Fluttertoast.showToast(
+            msg: response.message,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 18.0);
+      }
 
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  const CreateOrderPage(title: "Barcode Scanner")),
-          ModalRoute.withName("/Home"));
     } else {
       Fluttertoast.showToast(
           msg: "Sai mật khẩu hoặc lỗi mạng!",

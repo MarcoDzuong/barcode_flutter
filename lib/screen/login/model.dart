@@ -8,20 +8,20 @@ class LoginResponse {
   factory LoginResponse.fromJson(Map<String, dynamic> parsedJson) {
     return LoginResponse(
         message: parsedJson['message'].toString(),
-        userInfo: UserInfo.fromJson(parsedJson['data']));
+        userInfo: UserInfo.fromJson(parsedJson['data']?? Map()));
   }
 
 }
 
 class UserInfo {
-  String accessToken;
-  String tokenType;
+  String? accessToken;
+  String? tokenType;
 
   UserInfo({required this.accessToken, required this.tokenType});
 
   factory UserInfo.fromJson(Map<String, dynamic> parsedJson) {
     return UserInfo(
-        accessToken: parsedJson['access_token'].toString(),
-        tokenType: parsedJson['token_type'].toString());
+        accessToken: parsedJson['access_token']?.toString(),
+        tokenType: parsedJson['token_type']?.toString());
   }
 }
