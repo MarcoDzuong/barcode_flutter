@@ -19,28 +19,12 @@ class _ItemImageState extends State<ItemImage> {
     _path = widget.path;
   }
 
-  Widget createErrorImage(
-    BuildContext context,
-    Object error,
-    StackTrace? stackTrace,
-  ) {
-    return Text("data");
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: Image.file(
-              File(
-                _path,
-              ),
-              fit: BoxFit.cover,
-              errorBuilder: createErrorImage),
-        ),
-      ],
+    return SizedBox(
+      width: 50,
+      height: 50,
+      child: Image.file(File(_path), fit: BoxFit.cover),
     );
   }
 }
