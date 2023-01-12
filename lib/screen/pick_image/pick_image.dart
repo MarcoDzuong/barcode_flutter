@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PickImagePage extends StatefulWidget {
+
   const PickImagePage({super.key});
+
 
   @override
   State<StatefulWidget> createState() => _PickImagePageState();
@@ -39,37 +41,67 @@ class _PickImagePageState extends State<PickImagePage> {
     });
   }
 
+  _exit(){
+    Navigator.pop(context);
+  }
+
+  _done(){
+    Navigator.pop(context,_images);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("选择图片"),
+      ),
       body: Container(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Expanded(
-              child: _images.isEmpty ? Center(
-                child: Text("Empty, pick or capture image to add more"),
-              ) : ListView.builder(
-                itemCount: _images.length,
-                itemBuilder: (context, position) {
-                  return ItemImage(
-                    path: _images[position].path,
-                    onDeleteClick: () {
-                      _delete(_images[position]);
-                    },
-                  );
-                },
-              ),
-            ),
             Row(
               children: [
-                TextButton(
-                  onPressed: _pickImage,
-                  child: const Text("Pick image"),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: _exit,
+                  child: const Text("出口"),
                 ),
-                TextButton(
+                const SizedBox(width: 150),
+                ElevatedButton(
+                  onPressed: _done,
+                  child: const Text("完毕"),
+                ),
+              ],
+            ),
+            Expanded(
+              child: _images.isEmpty
+                  ? Center(
+                      child: Text("选择或拍照以添加更多"),
+                    )
+                  : ListView.builder(
+                      itemCount: _images.length,
+                      itemBuilder: (context, position) {
+                        return ItemImage(
+                          path: _images[position].path,
+                          onDeleteClick: () {
+                            _delete(_images[position]);
+                          },
+                        );
+                      },
+                    ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  child: const Text("选择图片"),
+                ),
+                const SizedBox(width: 100),
+                ElevatedButton(
                   onPressed: _captureImage,
-                  child: const Text("Capture image"),
+                  child: const Text("捕获图像"),
                 ),
               ],
             )

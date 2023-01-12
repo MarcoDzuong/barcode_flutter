@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:barcode_scan/screen/login/login.dart';
+import 'package:barcode_scan/screen/pick_image/pick_image.dart';
 import 'package:barcode_scan/screen/update_doc_order/model.dart';
 import 'package:barcode_scan/screen/update_doc_order/update_controller.dart';
 import 'package:flutter/material.dart';
@@ -29,21 +30,28 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
     _barcode = widget.barcode;
   }
 
-  final ImagePicker _picker = ImagePicker();
   List<XFile>? _images;
   final TextEditingController _noteController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _weightController = TextEditingController();
-  final TextEditingController _countController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController(text: "1");
+  final TextEditingController _weightController = TextEditingController(text: "1");
+  final TextEditingController _countController = TextEditingController(text: "1");
+
+
+
   UpdateProductController controller = UpdateProductController();
   int _countImage = 0;
   Future<void> _onImageButtonPressed() async {
-    final List<XFile> images = await _picker.pickMultiImage();
-    setState(() {
-      _images = images;
-      _imagePath = images[0].path;
-      _countImage = images.length;
-    });
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PickImagePage()),
+    );
+    if(result!=null){
+      setState(() {
+        _images = result;
+        _imagePath = result[0].path;
+        _countImage = result.length;
+      });
+    }
   }
 
   Future<void> _onUpdateProduct() async {
@@ -180,6 +188,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                       border: OutlineInputBorder(),
                       hintText: '价格',
                     ),
+
                   ),
                   const SizedBox(height: 30),
                   TextField(
