@@ -32,8 +32,8 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
 
   List<XFile>? _images;
   final TextEditingController _noteController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController(text: "1");
-  final TextEditingController _weightController = TextEditingController(text: "1");
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
   final TextEditingController _countController = TextEditingController(text: "1");
 
 
