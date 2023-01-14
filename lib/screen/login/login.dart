@@ -53,10 +53,14 @@ class _LoginPageState extends State<LoginPage> {
           fontSize: 18.0);
       return;
     }
-
+    setState(() {
+       isLoading  = true;
+    });
     LoginResponse? response =
         await loginController.login(email: _userName, passWord: _password);
-
+    setState(() {
+      isLoading  = false;
+    });
     if (response != null) {
       if(response.userInfo.accessToken!=null){
         var pres = await SharedPreferences.getInstance();
@@ -90,6 +94,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
         title: Text(widget.title),
       ),
       body: Center(
-          child: Padding(
+          child: isLoading ?  const CircularProgressIndicator() :  Padding(
         padding: const EdgeInsets.all(30.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

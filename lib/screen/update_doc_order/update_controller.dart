@@ -15,9 +15,9 @@ class UpdateProductController {
       requestHttp.headers["Authorization"] = "Bearer $token";
       requestHttp.fields["qr"] = request.barcode;
       requestHttp.fields["note"] = request.note;
-      requestHttp.fields["price"] = request.price.toString();
-      requestHttp.fields["weight"] = request.weight.toString();
-      requestHttp.fields["count"] = request.count.toString();
+      requestHttp.fields["price"] = request.price;
+      requestHttp.fields["weight"] = request.weight;
+      requestHttp.fields["count"] = request.count;
       request.images?.forEach((element) async {
         requestHttp.files
             .add(await http.MultipartFile.fromPath('images[]', element.path));

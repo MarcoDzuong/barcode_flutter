@@ -14,9 +14,9 @@ class UpdateRequest {
   String token;
   List<XFile>? images;
   String note;
-  int price;
-  int count;
-  int weight;
+  String price;
+  String count;
+  String weight;
 
   UpdateRequest(
       {required this.barcode, required this.note,

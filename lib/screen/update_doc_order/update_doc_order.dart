@@ -29,7 +29,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
     super.initState();
     _barcode = widget.barcode;
   }
-
+  bool isLoading = false;
   List<XFile>? _images;
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -55,7 +55,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
   }
 
   Future<void> _onUpdateProduct() async {
-    if (_images == null || _images!.isEmpty) {
+    if (_images == null || _images!.isEmpty ) {
       Fluttertoast.showToast(
           msg: "请选择一张照片!",
           toastLength: Toast.LENGTH_SHORT,
@@ -66,15 +66,36 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
           fontSize: 18.0);
       return;
     }
+
+    if (_countController.text.isEmpty) {
+      Fluttertoast.showToast(
+          msg: "要求输入包裹号!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 18.0);
+      return;
+    }
+
     final UpdateRequest updateRequest = UpdateRequest(
         barcode: _barcode,
         note: _noteController.text,
         token: "13|iGMssmFaDY9xupqTHt0foVAFuU3XY0UpVJYM7fT0",
         images: _images,
-        count: int.parse(_countController.text.toString()),
-        weight: int.parse(_weightController.text.toString()),
-        price: int.parse(_priceController.text.toString()));
+        count: (_countController.text.toString()),
+        weight: (_weightController.text.toString()),
+        price: (_priceController.text.toString()));
+
+    setState(() {
+      isLoading = true;
+    });
     UpdateResponse? response = await controller.update(updateRequest);
+    setState(() {
+      isLoading = false;
+    });
+
     if (response.isSuccess) {
       Fluttertoast.showToast(
           msg: "创造成功!",
@@ -121,7 +142,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: SingleChildScrollView(
+        body: isLoading ?  const Center( child:  CircularProgressIndicator(),) : SingleChildScrollView(
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(30.0),

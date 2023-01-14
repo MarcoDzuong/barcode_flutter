@@ -21,7 +21,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   String _barcodeResult = "";
   final TextEditingController _barcodeTextController = TextEditingController();
   final CreateOrderController _createOrderController = CreateOrderController();
-
+  bool isLoading =false;
   @override
   void initState() {
     super.initState();
@@ -32,8 +32,14 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
 
   Future<void> _submit() async {
     if (_barcodeResult.isNotEmpty) {
+      setState(() {
+        isLoading = true;
+      });
       CheckBarcodeRes? res =
           await _createOrderController.isExit(barcode: _barcodeResult);
+      setState(() {
+        isLoading = false;
+      });
       if (res == null) {
         Fluttertoast.showToast(
             msg: "网络错误!",
@@ -122,7 +128,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
           title: Text(widget.title),
         ),
         resizeToAvoidBottomInset: false,
-        body: Padding(
+        body: isLoading ?  const Center( child:  CircularProgressIndicator(),) : Padding(
           padding: const EdgeInsets.all(30.0),
           child: Column(
             children: <Widget>[
