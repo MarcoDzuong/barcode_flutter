@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:barcode_scan/cached/cached_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image/image.dart' as img;
+import 'package:uuid/uuid.dart';
 import '../constant_app.dart';
 import 'model.dart';
 import 'package:http/http.dart' as http;
@@ -27,22 +28,7 @@ class UpdateProductController {
       requestHttp.fields["price"] = request.price;
       requestHttp.fields["weight"] = request.weight;
       requestHttp.fields["count"] = request.count;
-      request.images?.forEach((element) async {
-        int sizeInBytes = File(element.path).lengthSync();
-        double fileSize = sizeInBytes / (1024 * 1024);
-        if (fileSize > 1) {
-          var byte = File(element.path).readAsBytesSync();
-          img.Image imageTemp = img.decodeImage(byte)!;
-          img.Image resizedImg =
-              img.copyResize(imageTemp, width: 1024, height: 1024);
-          requestHttp.files.add(http.MultipartFile.fromBytes(
-              'images[]', img.encodeJpg(resizedImg),
-              filename: 'resized_image.jpg'));
-        } else {
-          requestHttp.files
-              .add(await http.MultipartFile.fromPath('images[]', element.path));
-        }
-      });
+      await handleImage(request,requestHttp);
       var response = await requestHttp.send();
       var responseMap = await http.Response.fromStream(response);
       final responseData = jsonDecode(responseMap.body);
@@ -66,4 +52,25 @@ class UpdateProductController {
       return UpdateResponse(isSuccess: false, message: e.toString());
     }
   }
+
+  Future<void> handleImage(UpdateRequest request, http.MultipartRequest requestHttp) async {
+    var uuid = const Uuid();
+    request.images?.forEach((element) async {
+      int sizeInBytes = File(element.path).lengthSync();
+      double fileSize = sizeInBytes / (1024 * 1024);
+      if (fileSize > 1) {
+        var byte = File(element.path).readAsBytesSync();
+        img.Image imageTemp = img.decodeImage(byte)!;
+        img.Image resizedImg =
+        img.copyResize(imageTemp, width: 1024, height: 1024);
+        requestHttp.files.add(http.MultipartFile.fromBytes(
+            'images[]', img.encodeJpg(resizedImg),
+            filename: '${uuid.v1()}_resized_image.jpg'));
+      } else {
+        requestHttp.files
+            .add(await http.MultipartFile.fromPath('images[]', element.path));
+      }
+    });
+  }
+
 }
