@@ -1,5 +1,4 @@
 import 'package:barcode_scan/screen/login/login.dart';
-import 'package:barcode_scan/screen/pick_image/pick_image.dart';
 import 'package:flutter/material.dart';
 
 void main() {

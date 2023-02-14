@@ -1,7 +1,7 @@
+import 'package:barcode_scan/cached/cached_manager.dart';
 import 'package:barcode_scan/screen/create_order/create_order.dart';
+import 'package:barcode_scan/util/toast_util.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'login_controller.dart';
 import 'model.dart';
@@ -16,24 +16,22 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   @override
   void initState() {
     super.initState();
-   checkLogin();
+    checkLogin();
   }
 
-  Future<void> checkLogin() async {
-      var pres = await SharedPreferences.getInstance();
-      String? token = pres.getString("token");
-      if(token !=null && token.isNotEmpty){
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                const CreateOrderPage(title: "扫码机")),
-            ModalRoute.withName("/Home"));
-      }
+  checkLogin() async {
+    String token = await MyStorageImpl.getToken();
+    if (token.isNotEmpty) {
+      // ignore: use_build_context_synchronously
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const CreateOrderPage(title: "扫码机")),
+          ModalRoute.withName("/Home"));
+    }
   }
 
   String _userName = "";
@@ -41,56 +39,34 @@ class _LoginPageState extends State<LoginPage> {
 
   LoginController loginController = LoginController();
 
-  Future<void> _login() async {
+  _login() async {
     if (_userName.isEmpty || _password.isEmpty) {
-      Fluttertoast.showToast(
-          msg: "用户名或密码为空!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
+      ToastUtil.showWarning("用户名或密码为空!");
       return;
     }
     setState(() {
-       isLoading  = true;
+      isLoading = true;
     });
     LoginResponse? response =
         await loginController.login(email: _userName, passWord: _password);
     setState(() {
-      isLoading  = false;
+      isLoading = false;
     });
     if (response != null) {
-      if(response.userInfo.accessToken!=null){
-        var pres = await SharedPreferences.getInstance();
-        pres.setString("token",response.userInfo.accessToken!);
+      if (response.userInfo.accessToken != null) {
+        ToastUtil.showSuccess("登录成功");
+        MyStorageImpl.setToken(response.userInfo.accessToken!);
+        // ignore: use_build_context_synchronously
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                const CreateOrderPage(title: "扫码机")),
+                builder: (context) => const CreateOrderPage(title: "扫码机")),
             ModalRoute.withName("/Home"));
-      }else{
-        Fluttertoast.showToast(
-            msg: response.message,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 18.0);
+      } else {
+        ToastUtil.showError(response.message);
       }
-
     } else {
-      Fluttertoast.showToast(
-          msg: "密码错误或网络错误!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
+      ToastUtil.showError("密码错误或网络错误!");
     }
   }
 
@@ -103,40 +79,42 @@ class _LoginPageState extends State<LoginPage> {
         title: Text(widget.title),
       ),
       body: Center(
-          child: isLoading ?  const CircularProgressIndicator() :  Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              onChanged: (text) {
-                _userName = text;
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: '用户名',
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              onChanged: (text) {
-                _password = text;
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: '密码',
-              ),
-            ),
-            const SizedBox(height: 30),
-            TextButton(
-                onPressed: _login,
-                child: const Text(
-                  "登录",
-                  style: TextStyle(fontSize: 20),
-                ))
-          ],
-        ),
-      )),
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextField(
+                        onChanged: (text) {
+                          _userName = text;
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: '用户名',
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        onChanged: (text) {
+                          _password = text;
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: '密码',
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      TextButton(
+                          onPressed: _login,
+                          child: const Text(
+                            "登录",
+                            style: TextStyle(fontSize: 20),
+                          ))
+                    ],
+                  ),
+                )),
     );
   }
 }

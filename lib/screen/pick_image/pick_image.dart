@@ -75,7 +75,7 @@ class _PickImagePageState extends State<PickImagePage> {
             ),
             Expanded(
               child: _images.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Text("选择或拍照以添加更多"),
                     )
                   : ListView.builder(

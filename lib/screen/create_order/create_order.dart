@@ -1,10 +1,10 @@
+import 'package:barcode_scan/cached/cached_manager.dart';
 import 'package:barcode_scan/screen/create_order/create_order_controller.dart';
 import 'package:barcode_scan/screen/create_order/model.dart';
 import 'package:barcode_scan/screen/update_doc_order/update_doc_order.dart';
+import 'package:barcode_scan/util/toast_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../login/login.dart';
 
@@ -21,7 +21,8 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   String _barcodeResult = "";
   final TextEditingController _barcodeTextController = TextEditingController();
   final CreateOrderController _createOrderController = CreateOrderController();
-  bool isLoading =false;
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +31,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     });
   }
 
-  Future<void> _submit() async {
+  _submit() async {
     if (_barcodeResult.isNotEmpty) {
       setState(() {
         isLoading = true;
@@ -40,30 +41,17 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
       setState(() {
         isLoading = false;
       });
-      if (res == null) {
-        Fluttertoast.showToast(
-            msg: "网络错误!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 18.0);
+      if (res == null || res.status == 400) {
+        ToastUtil.showError("网络错误!");
         return;
       }
 
       if (res.status == 401) {
-        var pres = await SharedPreferences.getInstance();
-        await pres.remove('token');
-        Fluttertoast.showToast(
-            msg: "请重新登录!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 18.0);
+        MyStorageImpl.removeToken();
+        ToastUtil.showError("请重新登录!");
+        // ignore: use_build_context_synchronously
         Navigator.pop(context);
+        // ignore: use_build_context_synchronously
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -72,7 +60,9 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         return;
       }
 
-      if (res.data == true) {
+      if (res.status == 200 && res.data == true) {
+        ToastUtil.showSuccess("更新信息");
+        // ignore: use_build_context_synchronously
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -82,25 +72,18 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                   )),
         );
       } else {
-        Fluttertoast.showToast(
-            msg: "条形码已经存在!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 18.0);
+        ToastUtil.showError("条形码已经存在!");
       }
     }
   }
 
-  Future<void> _textChange(String text) async {
+  _textChange(String text) async {
     setState(() {
       _barcodeResult = text;
     });
   }
 
-  Future<void> _scanBarcode() async {
+  _scanBarcode() async {
     String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
         "#ff6666", "取消", false, ScanMode.BARCODE);
     if (barcodeScanRes != "-1") {
@@ -111,13 +94,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     }
   }
 
-  Future<void> _logOut() async {
-    var pres = await SharedPreferences.getInstance();
-    await pres.remove('token');
+  _logOut() async {
+    MyStorageImpl.removeToken();
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (context) => const LoginPage(title: "登录")),
+        MaterialPageRoute(builder: (context) => const LoginPage(title: "登录")),
         ModalRoute.withName("/Login"));
   }
 
@@ -128,66 +109,72 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
           title: Text(widget.title),
         ),
         resizeToAvoidBottomInset: false,
-        body: isLoading ?  const Center( child:  CircularProgressIndicator(),) : Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Column(
-            children: <Widget>[
-              ElevatedButton(
-                  onPressed: _logOut,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12), // <-- Radius
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  children: <Widget>[
+                    ElevatedButton(
+                        onPressed: _logOut,
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(12), // <-- Radius
+                          ),
+                        ),
+                        child: const Text("登出")),
+                    const SizedBox(height: 20),
+                    const Text(
+                      '下面是条形码信息:',
                     ),
-                  ),
-                  child: Text("登出")),
-              const SizedBox(height: 20),
-              const Text(
-                '下面是条形码信息:',
-              ),
-              const SizedBox(height: 20),
-              Text(
-                '条码 : $_barcodeResult',
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.red),
-              ),
-              const SizedBox(height: 60),
-              TextField(
-                onChanged: (text) {
-                  _textChange(text);
-                },
-                controller: _barcodeTextController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: '输入条形码',
+                    const SizedBox(height: 20),
+                    Text(
+                      '条码 : $_barcodeResult',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.red),
+                    ),
+                    const SizedBox(height: 60),
+                    TextField(
+                      onChanged: (text) {
+                        _textChange(text);
+                      },
+                      controller: _barcodeTextController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: '输入条形码',
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: _scanBarcode,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12), // <-- Radius
+                        ),
+                      ),
+                      child: const Text('使用条码扫描器'),
+                    ),
+                    const SizedBox(height: 100),
+                    ElevatedButton(
+                      onPressed:
+                          _barcodeResult.isEmpty ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12), // <-- Radius
+                        ),
+                      ),
+                      child: const Text(
+                        '订单创建确认',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: _scanBarcode,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // <-- Radius
-                  ),
-                ),
-                child: const Text('使用条码扫描器'),
-              ),
-              const SizedBox(height: 100),
-              ElevatedButton(
-                onPressed: _barcodeResult.isEmpty ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // <-- Radius
-                  ),
-                ),
-                child: const Text(
-                  '订单创建确认',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
-            ],
-          ),
-        ));
+              ));
   }
 }

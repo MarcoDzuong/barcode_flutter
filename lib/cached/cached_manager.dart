@@ -1,26 +1,18 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MyStorageImpl   {
+class MyStorageImpl {
+  static Future<String> getToken() async {
+    var pres = await SharedPreferences.getInstance();
+    return pres.getString("token") ?? "";
+  }
 
-// final _storage =
-  //
-  // @override
-  // Future<Map<String, dynamic>> read(String key) async {
-  //   return await _storage.read(key);
-  // }
-  //
-  // @override
-  // Future<void> write(String key, Map<String, dynamic> data) async {
-  //   await _storage.write(key, data);
-  // }
-  //
-  // @override
-  // Future<void> delete(String key) async {
-  //   await _storage.delete(key);
-  // }
-  //
-  // @override
-  // Future<void> deleteAll() async {
-  //   await _storage.deleteAll();
-  // }
+  static removeToken() async {
+    var pres = await SharedPreferences.getInstance();
+    await pres.remove('token');
+  }
+
+  static setToken(String token) async {
+    var pres = await SharedPreferences.getInstance();
+    pres.setString("token", token);
+  }
 }

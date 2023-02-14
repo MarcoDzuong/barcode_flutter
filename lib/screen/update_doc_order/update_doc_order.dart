@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:barcode_scan/cached/cached_manager.dart';
 import 'package:barcode_scan/screen/login/login.dart';
 import 'package:barcode_scan/screen/pick_image/pick_image.dart';
 import 'package:barcode_scan/screen/update_doc_order/model.dart';
 import 'package:barcode_scan/screen/update_doc_order/update_controller.dart';
+import 'package:barcode_scan/util/toast_util.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UpdateDocOrderPage extends StatefulWidget {
   const UpdateDocOrderPage(
@@ -40,7 +40,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
 
   UpdateProductController controller = UpdateProductController();
   int _countImage = 0;
-  Future<void> _onImageButtonPressed() async {
+  _onImageButtonPressed() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const PickImagePage()),
@@ -54,28 +54,14 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
     }
   }
 
-  Future<void> _onUpdateProduct() async {
+   _onUpdateProduct()  async {
     if (_images == null || _images!.isEmpty ) {
-      Fluttertoast.showToast(
-          msg: "请选择一张照片!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
+      ToastUtil.showWarning( "请选择一张照片!");
       return;
     }
 
     if (_countController.text.isEmpty) {
-      Fluttertoast.showToast(
-          msg: "要求输入包裹号!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
+      ToastUtil.showWarning( "要求输入包裹号!");
       return;
     }
 
@@ -97,41 +83,23 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
     });
 
     if (response.isSuccess) {
-      Fluttertoast.showToast(
-          msg: "创造成功!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
+      ToastUtil.showSuccess("创造成功!");
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } else if (response.statusCode == 401) {
-      var pres = await SharedPreferences.getInstance();
-      await pres.remove('token');
-      Fluttertoast.showToast(
-          msg: "请重新登录!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
+      MyStorageImpl.removeToken();
+      ToastUtil.showError("请重新登录!");
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
+      // ignore: use_build_context_synchronously
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) => const LoginPage(title: "登录")),
           ModalRoute.withName("/Login"));
     } else {
-      Fluttertoast.showToast(
-          msg: "条形码已经存在!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
+      ToastUtil.showError("条形码已经存在! OR ${response.message}");
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     }
   }
