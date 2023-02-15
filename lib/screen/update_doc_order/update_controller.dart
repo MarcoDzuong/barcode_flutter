@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:barcode_scan/cached/cached_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image/image.dart' as img;
 import 'package:uuid/uuid.dart';
 import '../constant_app.dart';
@@ -28,8 +29,11 @@ class UpdateProductController {
       requestHttp.fields["price"] = request.price;
       requestHttp.fields["weight"] = request.weight;
       requestHttp.fields["count"] = request.count;
-      await handleImage(request,requestHttp);
-      var response = await requestHttp.send();
+      ReceivePort port = ReceivePort();
+      final isolate = await Isolate.spawn(handleImage, [port.sendPort,request, requestHttp]);
+      http.MultipartRequest newRequestHttp = await port.first;
+      isolate.kill(priority: Isolate.immediate);
+      var response = await newRequestHttp.send();
       var responseMap = await http.Response.fromStream(response);
       final responseData = jsonDecode(responseMap.body);
       late UpdateResponse result;
@@ -53,7 +57,10 @@ class UpdateProductController {
     }
   }
 
-  Future<void> handleImage(UpdateRequest request, http.MultipartRequest requestHttp) async {
+  void handleImage(List<dynamic> params) async {
+    SendPort sendPort = params[0];
+    UpdateRequest request =params[1];
+    http.MultipartRequest requestHttp =params[2];
     var uuid = const Uuid();
     request.images?.forEach((element) async {
       int sizeInBytes = File(element.path).lengthSync();
@@ -71,6 +78,8 @@ class UpdateProductController {
             .add(await http.MultipartFile.fromPath('images[]', element.path));
       }
     });
+    sendPort.send(requestHttp);
   }
+
 
 }
