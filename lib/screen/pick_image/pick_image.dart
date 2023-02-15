@@ -64,19 +64,19 @@ class _PickImagePageState extends State<PickImagePage> {
                 const SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: _exit,
-                  child: const Text("出口"),
+                  child: const Text("退出"),
                 ),
                 const SizedBox(width: 150),
                 ElevatedButton(
                   onPressed: _done,
-                  child: const Text("完毕"),
+                  child: const Text("完成"),
                 ),
               ],
             ),
             Expanded(
               child: _images.isEmpty
                   ? const Center(
-                      child: Text("选择或拍照以添加更多"),
+                      child: Text("选择图片或者拍照添加"),
                     )
                   : ListView.builder(
                       itemCount: _images.length,
@@ -101,7 +101,7 @@ class _PickImagePageState extends State<PickImagePage> {
                 const SizedBox(width: 100),
                 ElevatedButton(
                   onPressed: _captureImage,
-                  child: const Text("捕获图像"),
+                  child: const Text("拍照"),
                 ),
               ],
             )

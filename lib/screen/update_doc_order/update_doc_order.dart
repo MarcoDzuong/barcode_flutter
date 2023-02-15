@@ -117,14 +117,14 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("条码 : ${widget.barcode}"),
+                  Text("运单号码 : ${widget.barcode}"),
                   const SizedBox(height: 30),
                   Row(
                     children: [
                       TextButton(
                           onPressed: _onImageButtonPressed,
                           child: const Text(
-                            "选择照片",
+                            "选择图片",
                             style: TextStyle(fontSize: 20),
                           )),
                       const SizedBox(
@@ -166,7 +166,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                     controller: _weightController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: '重量',
+                      hintText: 'kg/m3',
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -175,7 +175,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                     controller: _priceController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: '价格',
+                      hintText: '运费',
                     ),
 
                   ),
@@ -184,7 +184,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                     controller: _noteController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: '笔记',
+                      hintText: '备注',
                     ),
                     minLines: 4,
                     maxLines: 5,
@@ -198,7 +198,7 @@ class _UpdateDocOrderPageState extends State<UpdateDocOrderPage> {
                       ),
                     ),
                     child: const Text(
-                      '创建订单',
+                      '确认创建',
                       style: TextStyle(fontSize: 20),
                     ),
                   ),

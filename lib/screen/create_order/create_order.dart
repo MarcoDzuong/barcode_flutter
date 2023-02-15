@@ -125,14 +125,14 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                 BorderRadius.circular(12), // <-- Radius
                           ),
                         ),
-                        child: const Text("登出")),
+                        child: const Text("退出登录")),
                     const SizedBox(height: 20),
                     const Text(
-                      '下面是条形码信息:',
+                      '条码信息',
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      '条码 : $_barcodeResult',
+                      '运单号码 : $_barcodeResult',
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -157,7 +157,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           borderRadius: BorderRadius.circular(12), // <-- Radius
                         ),
                       ),
-                      child: const Text('使用条码扫描器'),
+                      child: const Text('扫描件'),
                     ),
                     const SizedBox(height: 100),
                     ElevatedButton(
@@ -169,7 +169,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                         ),
                       ),
                       child: const Text(
-                        '订单创建确认',
+                        '确认创建',
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
