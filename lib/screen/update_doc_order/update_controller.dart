@@ -1,8 +1,8 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'package:barcode_scan/cached/cached_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image/image.dart' as img;
 import 'package:uuid/uuid.dart';
 import '../constant_app.dart';
@@ -65,21 +65,21 @@ class UpdateProductController {
     request.images?.forEach((element) async {
       int sizeInBytes = File(element.path).lengthSync();
       double fileSize = sizeInBytes / (1024 * 1024);
-      if (fileSize > 1) {
+      if (fileSize > 2) {
         var byte = File(element.path).readAsBytesSync();
         img.Image imageTemp = img.decodeImage(byte)!;
         img.Image resizedImg =
-        img.copyResize(imageTemp, width: 1024, height: 1024);
+        img.copyResize(imageTemp, width: 2* 1024, height: 2* 1024);
         requestHttp.files.add(http.MultipartFile.fromBytes(
             'images[]', img.encodeJpg(resizedImg),
             filename: '${uuid.v1()}_resized_image.jpg'));
       } else {
-        requestHttp.files
-            .add(await http.MultipartFile.fromPath('images[]', element.path));
+        requestHttp.files.add(http.MultipartFile.fromBytes(
+            'images[]', File(element.path).readAsBytesSync(),
+            filename: '${uuid.v1()}_resized_image.jpg'));
       }
     });
     sendPort.send(requestHttp);
   }
-
 
 }
