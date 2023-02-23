@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math';
 import 'package:barcode_scan/cached/cached_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image/image.dart' as img;
@@ -69,7 +70,7 @@ class UpdateProductController {
         var byte = File(element.path).readAsBytesSync();
         img.Image imageTemp = img.decodeImage(byte)!;
         img.Image resizedImg =
-        img.copyResize(imageTemp, width: 2* 1024, height: 2* 1024);
+        img.copyResize(imageTemp, width: (sqrt(2)* 1024).toInt(), height: (sqrt(2)* 1024).toInt());
         requestHttp.files.add(http.MultipartFile.fromBytes(
             'images[]', img.encodeJpg(resizedImg),
             filename: '${uuid.v1()}_resized_image.jpg'));
